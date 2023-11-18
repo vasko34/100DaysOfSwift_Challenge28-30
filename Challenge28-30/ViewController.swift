@@ -10,9 +10,13 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationController?.navigationBar.isHidden = true
-        
         performSelector(inBackground: #selector(loadWordPairs), with: nil)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.navigationBar.isHidden = true
     }
     
     @IBAction func startGame(_ sender: Any) {
@@ -47,6 +51,14 @@ class ViewController: UIViewController {
                 wordPairs = try jsonDecoder.decode([String].self, from: wordPairsToLoad)
             } catch {
                 print("Failed to load word pairs.")
+            }
+            
+            if wordPairs.isEmpty {
+                if let url = Bundle.main.url(forResource: "wordPairs", withExtension: "txt") {
+                    if let wordPairsString = try? String(contentsOf: url) {
+                        wordPairs = wordPairsString.components(separatedBy: "\n")
+                    }
+                }
             }
         }
     }
